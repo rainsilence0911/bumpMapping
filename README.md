@@ -5,10 +5,10 @@ bump mapping是一种廉价的实现凹凸纹理的算法。这个算法不需�
 
 ## 效果图
 
-调整前的原始纹理
+### 调整前的原始纹理
 
 ![image](https://github.com/rainsilence0911/bumpMapping/blob/master/snipshot/Capture.PNG)
 
-调整后的凹凸纹理
+### 调整后的凹凸纹理
 
 ![image](https://github.com/rainsilence0911/bumpMapping/blob/master/snipshot/Capture2.PNG)
