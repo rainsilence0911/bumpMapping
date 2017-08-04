@@ -33,7 +33,6 @@ export default class BumpPlayer {
 
     initShader (shader) {
         let mesh = this._mesh = this._shader.createMesh();
-        shader.resourceCount = 3;
         shader.depthTest();
 
         this.requestVertexData().then((result) => {
@@ -89,6 +88,7 @@ export default class BumpPlayer {
         var gl = shader.gl;
 
         shader.viewport();
+        shader.clearColor(0.0, 0.0, 0.0, 1.0);
         shader.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         var mvMatrix = Matrix.translate(0.0, 0.0, -8.0);
