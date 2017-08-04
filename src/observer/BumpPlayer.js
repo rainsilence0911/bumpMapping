@@ -4,11 +4,14 @@ import Texture from '../gl/Texture';
 
 import Timer from '../util/Timer';
 
-import vertShader from '../glsl/bump.vert';
-import fragShader from '../glsl/bump.frag';
+import bumpVert from '../glsl/bump.vert';
+import bumpFrag from '../glsl/bump.frag';
 
-import planeVertShader from '../glsl/plane.vert';
-import planeFragShader from '../glsl/plane.frag';
+import planeVert from '../glsl/plane.vert';
+import planeFrag from '../glsl/plane.frag';
+
+import shadowVert from '../glsl/shadow.vert';
+import shadowFrag from '../glsl/shadow.frag';
 
 import normalSamplerPath from '../assets/20_2.gif';
 import wallSamplerPath from '../assets/20_1.gif';
@@ -29,47 +32,56 @@ export default class BumpPlayer {
                 },
                 uniform: {
                     uPMatrix: perspectiveMatrix
-                }
+                },
+                mesh: null
             },
             plane: {
+                vertice: [
+                    -4.0, 0.0, 4.0,
+                    -4.0, 0.0, -4.0,
+                    4.0, 0.0, 4.0,
+                    4.0, 0.0, -4.0
+                ],
                 uniform: {
                     uPMatrix: perspectiveMatrix
-                }
+                },
+                mesh: null
+            },
+            shadow: {
+                uniform: {
+                    uPMatrix: perspectiveMatrix,
+                    uVMatrix: Matrix.lookAt(0.0, 4.1, 3.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
+                },
+                cubeMesh: null,
+                planeMesh: null
             }
         };
         this.timer = new Timer(3);
         this.timer.addTask(this.onFrameEnter.bind(this));
 
-        let shader = this._shader = Shader.create(canvas, vertShader, fragShader);
-        this.initShader(shader);
-
-        this._shadowShader = Shader.create(canvas, planeVertShader, planeFragShader);
-        var rectangleMesh = this._rectangleMesh = this._shadowShader.createMesh();
-        rectangleMesh.addAttributeBuffer('aVertexPosition', [
-            -3.0, 0.0, 3.0,
-            -3.0, 0.0, -3.0,
-            3.0, 0.0, 3.0,
-            3.0, 0.0, -3.0
-        ], 3);
+        this.requestVertexData().then((result) => {
+            this.initCubeShader(canvas, result);
+            this.initPlaneShader(canvas);
+            this.initShadowShader(canvas, result);
+        });
     }
 
-    initShader (shader) {
-        let mesh = this._mesh = this._shader.createMesh();
+    initCubeShader (canvas, result) {
+        let shader = this._cubeShader = Shader.create(canvas, bumpVert, bumpFrag);
+        let mesh = this._state.cube.mesh = shader.createMesh();
         shader.depthTest();
 
-        this.requestVertexData().then((result) => {
-            var data = result.data;
+        var data = result.data;
 
-            for (var name in data) {
-                if (data.hasOwnProperty(name)) {
-                    var info = data[name];
-                    mesh.addAttributeBuffer(name, info.vertice, info.count);
-                }
+        for (var name in data) {
+            if (data.hasOwnProperty(name)) {
+                var info = data[name];
+                mesh.addAttributeBuffer(name, info.vertice, info.count);
             }
+        }
 
-            mesh.addIndexBuffer(result.indexBuffer);
-            this.timer.start();
-        });
+        mesh.addIndexBuffer(result.indexBuffer);
+        this.timer.start();
 
         Texture.linear(shader.gl, normalSamplerPath, (texture) => {
             this._state.cube.uniform.uNormalSampler = texture;
@@ -79,6 +91,32 @@ export default class BumpPlayer {
         Texture.linear(shader.gl, wallSamplerPath, (texture) => {
             this._state.cube.uniform.uSampler = texture;
             this.timer.start();
+        });
+    }
+
+    initPlaneShader (canvas) {
+        this._planeShader = Shader.create(canvas, planeVert, planeFrag);
+        var mesh = this._state.plane.mesh = this._planeShader.createMesh();
+        mesh.addAttributeBuffer('aVertexPosition', this._state.plane.vertice, 3);
+    }
+
+    initShadowShader (canvas, result) {
+        var shader = this._shadowShader = Shader.create(canvas, shadowVert, shadowFrag);
+        var shadow = this._state.shadow;
+
+        var cubeMesh = shadow.cubeMesh = shader.createMesh();
+        var prop = 'aVertexPosition';
+        var data = result.data[prop];
+        cubeMesh.addAttributeBuffer(prop, data.vertice, data.count);
+        cubeMesh.addIndexBuffer(result.indexBuffer);
+
+        var planeMesh = shadow.planeMesh = shader.createMesh();
+        planeMesh.addAttributeBuffer(prop, this._state.plane.vertice, 3);
+
+        var gl = shader.gl;
+        this._state.shadow.buffer = shader.createFrameBufferTexture(256, 256, {
+            wrapS: gl.CLAMP_TO_EDGE,
+            wrapT: gl.CLAMP_TO_EDGE
         });
     }
 
@@ -102,9 +140,7 @@ export default class BumpPlayer {
         this.doTickAction(elapse);
 
         this.clearStage();
-
         this.renderCube();
-
         this.renderPlane();
     }
 
@@ -118,7 +154,7 @@ export default class BumpPlayer {
     }
 
     clearStage () {
-        var shader = this._shader;
+        var shader = this._cubeShader;
         var gl = shader.gl;
 
         shader.viewport();
@@ -131,27 +167,51 @@ export default class BumpPlayer {
         var cube = state.cube;
         var rot = cube.rotate;
 
-        var mvMatrix = Matrix.translate(0.0, 0.0, -8.0);
-        mvMatrix.rotate(rot.x, 1, 0, 0);
-        mvMatrix.rotate(rot.y, 0, 1, 0);
-        mvMatrix.rotate(rot.z, 0, 0, 1);
+        var mMatrix = new Matrix();
+        mMatrix.rotate(rot.x, 1, 0, 0);
+        mMatrix.rotate(rot.y, 0, 1, 0);
+        mMatrix.rotate(rot.z, 0, 0, 1);
 
-        var shader = this._shader;
+        var shader = this._cubeShader;
         var gl = shader.gl;
 
         var uniform = cube.uniform;
-        uniform.uMVMatrix = mvMatrix;
-        uniform.uNormalMatrix = Matrix.transpose(Matrix.inverse(Matrix.clone(mvMatrix)));
+        uniform.uVMatrix = Matrix.translate(0.0, 0.0, -8.0);
+        uniform.uMMatrix = mMatrix;
+        uniform.uNormalMatrix = Matrix.transpose(Matrix.inverse(Matrix.multiply(uniform.uVMatrix, uniform.uMMatrix)));
         uniform.uBumpHeight = state.bumpHeight;
         uniform.bUseBumpMapping = state.useBump;
-        shader.uniforms(uniform).draw(this._mesh, gl.TRIANGLES);
+        shader.uniforms(uniform).draw(cube.mesh, gl.TRIANGLES);
     }
 
     renderPlane () {
-        var shader = this._shadowShader;
-        var uniform = this._state.plane.uniform;
+        this.renderShadow();
+        var shader = this._planeShader;
+        var plane = this._state.plane;
+        var uniform = plane.uniform;
         var gl = shader.gl;
+        shader.viewport();
         uniform.uMVMatrix = Matrix.translate(0.0, -2.0, -8.0);
-        this._shadowShader.uniforms(uniform).draw(this._rectangleMesh, gl.TRIANGLE_STRIP);
+        shader.uniforms(uniform).draw(plane.mesh, gl.TRIANGLE_STRIP);
+    }
+
+    renderShadow () {
+        var shader = this._shadowShader;
+        var gl = shader.gl;
+        var shadow = this._state.shadow;
+        var uniform = shadow.uniform;
+
+        shader.drawFrameBuffer(shadow.buffer, (buffer) => {
+            shader.viewport(0, 0, buffer.width, buffer.height);
+            shader.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+            uniform.uMMatrix = this._state.cube.uniform.uMMatrix;
+            shader.uniforms(uniform).draw(shadow.cubeMesh, gl.TRIANGLES);
+
+            uniform.uMMatrix = new Matrix();
+            shader.uniforms(uniform).draw(shadow.planeMesh, gl.TRIANGLE_STRIP);
+        });
+
+        return shadow.buffer;
     }
 };
