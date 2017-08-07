@@ -23,6 +23,7 @@ export default class BumpPlayer {
 
         this._state = {
             useBump: useBump || true,
+            useShadow: false,
             bumpHeight: Number(bumpHeight),
             cube: {
                 rotate: {
@@ -50,7 +51,7 @@ export default class BumpPlayer {
             shadow: {
                 uniform: {
                     uPMatrix: perspectiveMatrix,
-                    uVMatrix: Matrix.lookAt(0.0, 4.1, 3.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
+                    uVMatrix: Matrix.lookAt(0.0, 14.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
                 },
                 cubeMesh: null,
                 planeMesh: null
@@ -132,6 +133,10 @@ export default class BumpPlayer {
         this._state.useBump = value;
     }
 
+    useShadow (value) {
+        this._state.useShadow = value;
+    }
+
     bumpHeight (value) {
         this._state.bumpHeight = Number(value);
     }
@@ -176,7 +181,7 @@ export default class BumpPlayer {
         var gl = shader.gl;
 
         var uniform = cube.uniform;
-        uniform.uVMatrix = Matrix.translate(0.0, 0.0, -8.0);
+        uniform.uVMatrix = Matrix.translate(0.0, 0.0, -7.0);
         uniform.uMMatrix = mMatrix;
         uniform.uNormalMatrix = Matrix.transpose(Matrix.inverse(Matrix.multiply(uniform.uVMatrix, uniform.uMMatrix)));
         uniform.uBumpHeight = state.bumpHeight;
@@ -185,13 +190,24 @@ export default class BumpPlayer {
     }
 
     renderPlane () {
+        var state = this._state;
+        if (!state.useShadow) {
+            return;
+        }
+
         this.renderShadow();
+
         var shader = this._planeShader;
-        var plane = this._state.plane;
+
+        var plane = state.plane;
+        var shadow = state.shadow;
         var uniform = plane.uniform;
         var gl = shader.gl;
         shader.viewport();
-        uniform.uMVMatrix = Matrix.translate(0.0, -2.0, -8.0);
+        uniform.uVMatrix = Matrix.translate(0.0, -2.0, -7.0);
+        uniform.uMMatrix = new Matrix();
+        uniform.uViewFromLightMatrix = shadow.uniform.uVMatrix;
+        uniform.uShadowMap = shadow.buffer.texture;
         shader.uniforms(uniform).draw(plane.mesh, gl.TRIANGLE_STRIP);
     }
 

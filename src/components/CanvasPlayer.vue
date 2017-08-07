@@ -17,6 +17,8 @@ export default {
                 this._player.useBump(payload);
             } else if (mutation.type === types.CHANGE_BUMP_HEIGHT) {
                 this._player.bumpHeight(payload);
+            } else if (mutation.type === types.CHANGE_USE_SHADOW) {
+                this._player.useShadow(payload);
             }
         });
     }
