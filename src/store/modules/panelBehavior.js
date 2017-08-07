@@ -23,8 +23,8 @@ const actions = {
     changeUseShadow ({ commit, state }, e) {
         commit(types.CHANGE_USE_SHADOW, (e.target || e.srcElement).checked);
     },
-    changeShadowPosition ({ commit, state }, e) {
-        commit(types.CHANGE_SHADOW_POSITION, (e.target || e.srcElement).value);
+    changeShadowX ({ commit, state }, e) {
+        commit(types.CHANGE_SHADOW_X, (e.target || e.srcElement).value);
     },
     changeCamera ({ commit, state }, e) {
         commit(types.CHANGE_CAMERA, (e.target || e.srcElement).value);
@@ -44,7 +44,7 @@ const mutations = {
     [types.CHANGE_USE_SHADOW] (state, param) {
         state.useShadow = param || false;
     },
-    [types.CHANGE_SHADOW_POSITION] (state, param) {
+    [types.CHANGE_SHADOW_X] (state, param) {
         state.shadowXPosition = param;
     },
     [types.CHANGE_CAMERA] (state, param) {

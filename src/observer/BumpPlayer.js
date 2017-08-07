@@ -227,7 +227,7 @@ export default class BumpPlayer {
         var shadow = state.shadow;
         var uniform = shadow.uniform;
 
-        uniform.uVMatrix = Matrix.lookAt(state.shadowX, 14.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+        uniform.uVMatrix = Matrix.lookAt(state.shadowX, 14.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.1);
 
         shader.drawFrameBuffer(shadow.buffer, (buffer) => {
             shader.viewport(0, 0, buffer.width, buffer.height);

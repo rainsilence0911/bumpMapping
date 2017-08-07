@@ -35,7 +35,7 @@
                 <label for="shadowPosition" >shadow x:</label>
                 <span class="setting-span">
                     <input type="range" min="-11" max="11" step="1" id="shadowPosition" ref="shadowPosition"
-                        value="0" class="setting-range-item" @input="onShadowPositionChange($event)">
+                        value="0" class="setting-range-item" @input="onShadowXChange($event)">
                 </span>
             </div>
         </fieldset>
@@ -50,7 +50,7 @@ export default {
             onUseShadowChange: 'changeUseShadow',
             onUseBumpChange: 'changeUseBump',
             onBumpRangeChange: 'changeBumpHeight',
-            onShadowPositionChange: 'changeShadowPosition',
+            onShadowXChange: 'changeShadowX',
             onCameraChange: 'changeCamera'
         })
     },
