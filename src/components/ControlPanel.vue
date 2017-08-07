@@ -20,6 +20,13 @@
                 <input type="checkbox" id="isUseShadow" ref="isUseShadow" @change="onUseShadowChange($event)">
                 <label for="isUseShadow" >use shadow</label>
             </div>
+            <div>
+                <label for="shadowPosition" >shadow position:</label>
+                <span class="bump-height-span">
+                    <input type="range" min="-11" max="11" step="1" id="shadowPosition" ref="shadowPosition"
+                        value="0" class="bump-height-range" @input="onShadowPositionChange($event)">
+                </span>
+            </div>
         </fieldset>
     </div>
 </template>
@@ -31,7 +38,8 @@ export default {
         ...mapActions({
             onUseShadowChange: 'changeUseShadow',
             onUseBumpChange: 'changeUseBump',
-            onBumpRangeChange: 'changeBumpHeight'
+            onBumpRangeChange: 'changeBumpHeight',
+            onShadowPositionChange: 'changeShadowPosition'
         })
     },
 
