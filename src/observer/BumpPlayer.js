@@ -22,6 +22,7 @@ export default class BumpPlayer {
         var perspectiveMatrix = Matrix.perspective(45, canvas.width / canvas.height, 0.1, 100.0);
 
         this._state = {
+            cameraDistance: -7,
             shadowX: 0,
             useBump: useBump || true,
             useShadow: false,
@@ -51,8 +52,7 @@ export default class BumpPlayer {
             },
             shadow: {
                 uniform: {
-                    uPMatrix: perspectiveMatrix,
-                    uVMatrix: Matrix.lookAt(0.0, 14.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
+                    uPMatrix: perspectiveMatrix
                 },
                 cubeMesh: null,
                 planeMesh: null
@@ -142,6 +142,10 @@ export default class BumpPlayer {
         this._state.shadowX = value;
     }
 
+    cameraDistance (value) {
+        this._state.cameraDistance = value;
+    }
+
     bumpHeight (value) {
         this._state.bumpHeight = Number(value);
     }
@@ -186,7 +190,7 @@ export default class BumpPlayer {
         var gl = shader.gl;
 
         var uniform = cube.uniform;
-        uniform.uVMatrix = Matrix.translate(0.0, 0.0, -7.0);
+        uniform.uVMatrix = Matrix.translate(0.0, 0.0, state.cameraDistance);
         uniform.uMMatrix = mMatrix;
         uniform.uNormalMatrix = Matrix.transpose(Matrix.inverse(Matrix.multiply(uniform.uVMatrix, uniform.uMMatrix)));
         uniform.uBumpHeight = state.bumpHeight;
@@ -209,7 +213,7 @@ export default class BumpPlayer {
         var uniform = plane.uniform;
         var gl = shader.gl;
         shader.viewport();
-        uniform.uVMatrix = Matrix.translate(0.0, -2.0, -7.0);
+        uniform.uVMatrix = Matrix.translate(0.0, -2.0, state.cameraDistance);
         uniform.uMMatrix = new Matrix();
         uniform.uViewFromLightMatrix = shadow.uniform.uVMatrix;
         uniform.uShadowMap = shadow.buffer.texture;

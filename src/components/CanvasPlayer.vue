@@ -21,6 +21,8 @@ export default {
                 this._player.useShadow(payload);
             } else if (mutation.type === types.CHANGE_SHADOW_POSITION) {
                 this._player.shadowX(payload);
+            } else if (mutation.type === types.CHANGE_CAMERA) {
+                this._player.cameraDistance(payload);
             }
         });
     }

@@ -1,6 +1,17 @@
 <template>
     <div class="setting-container">
         <fieldset>
+            <legend>Viewport Setting</legend>
+            <div class="bump-height-panel">
+                <label for="camera" >camera:</label>
+                <span class="setting-span">
+                    <input type="range" min="-17" max="-7" step="1" id="camera" ref="camera"
+                        value="-7" class="setting-range-item" @input="onCameraChange($event)">
+                </span>
+            </div>
+        </fieldset>
+
+        <fieldset>
             <legend>Bump Setting</legend>
             <div>
                 <input type="checkbox" id="isUseBump" ref="isUseBump" checked @change="onUseBumpChange($event)">
@@ -8,9 +19,9 @@
             </div>
             <div class="bump-height-panel" id="bumpHeightPanel">
                 <label for="bumpHeight" >bump height:</label>
-                <span class="bump-height-span">
+                <span class="setting-span">
                     <input type="range" min="0.3" max="4" step="0.1" id="bumpHeight" ref="bumpHeight"
-                        value="1.9" class="bump-height-range" @input="onBumpRangeChange($event)">
+                        value="1.9" class="setting-range-item" @input="onBumpRangeChange($event)">
                 </span>
             </div>
         </fieldset>
@@ -21,10 +32,10 @@
                 <label for="isUseShadow" >use shadow</label>
             </div>
             <div>
-                <label for="shadowPosition" >shadow position:</label>
-                <span class="bump-height-span">
+                <label for="shadowPosition" >shadow x:</label>
+                <span class="setting-span">
                     <input type="range" min="-11" max="11" step="1" id="shadowPosition" ref="shadowPosition"
-                        value="0" class="bump-height-range" @input="onShadowPositionChange($event)">
+                        value="0" class="setting-range-item" @input="onShadowPositionChange($event)">
                 </span>
             </div>
         </fieldset>
@@ -39,7 +50,8 @@ export default {
             onUseShadowChange: 'changeUseShadow',
             onUseBumpChange: 'changeUseBump',
             onBumpRangeChange: 'changeBumpHeight',
-            onShadowPositionChange: 'changeShadowPosition'
+            onShadowPositionChange: 'changeShadowPosition',
+            onCameraChange: 'changeCamera'
         })
     },
 
@@ -62,12 +74,12 @@ export default {
     line-height: 30px;
 }
 
-.bump-height-span {
+.setting-span {
     display: inline-block;
     position: relative;
 }
 
-.bump-height-range {
+.setting-range-item {
     display: inline-block;
     position: relative;
     top: 5px;

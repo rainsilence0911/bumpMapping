@@ -5,6 +5,7 @@ const state = {
     useBump: true,
     useShadow: false,
     bumpHeight: 0,
+    cameraDistance: -7,
     shadowXPosition: 0
 };
 
@@ -25,6 +26,9 @@ const actions = {
     changeShadowPosition ({ commit, state }, e) {
         commit(types.CHANGE_SHADOW_POSITION, (e.target || e.srcElement).value);
     },
+    changeCamera ({ commit, state }, e) {
+        commit(types.CHANGE_CAMERA, (e.target || e.srcElement).value);
+    },
     panelReady ({ commit, state }, data) {
         commit(types.PANEL_READY, data);
     }
@@ -42,6 +46,9 @@ const mutations = {
     },
     [types.CHANGE_SHADOW_POSITION] (state, param) {
         state.shadowXPosition = param;
+    },
+    [types.CHANGE_CAMERA] (state, param) {
+        state.cameraDistance = param;
     },
     [types.PANEL_READY] (state, param) {
         state.useBump = param.useBump;
