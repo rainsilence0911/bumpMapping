@@ -7,11 +7,11 @@ shadow mapping是一种生成舞台中元素影子的算法。
 
 ## Bump Mapping效果图
 
-### 调整前的原始纹理
+### 不使用bump mapping的原始纹理
 
 ![image](https://github.com/rainsilence0911/bumpMapping/blob/master/snipshot/Capture080701.PNG)
 
-### 调整后的凹凸纹理
+### 使用后的加深凹凸纹理(凹凸程度可调节)
 
 ![image](https://github.com/rainsilence0911/bumpMapping/blob/master/snipshot/Capture080702.PNG)
 
@@ -19,6 +19,8 @@ shadow mapping是一种生成舞台中元素影子的算法。
 
 ![image](https://github.com/rainsilence0911/bumpMapping/blob/master/snipshot/Capture3.PNG)
 
+## 整体效果
+![image](https://github.com/rainsilence0911/bumpMapping/blob/master/snipshot/control-panel.PNG)
 
 ## How to install
 
