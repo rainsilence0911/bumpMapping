@@ -15,11 +15,11 @@ shadow mapping是一种生成舞台中元素影子的算法。
 
 ![image](https://github.com/rainsilence0911/bumpMapping/blob/master/snipshot/Capture080702.PNG)
 
-### Shadow Mapping效果图
+## Shadow Mapping效果图
 
 ![image](https://github.com/rainsilence0911/bumpMapping/blob/master/snipshot/Capture3.PNG)
 
-## 整体效果
+## 画面layout
 ![image](https://github.com/rainsilence0911/bumpMapping/blob/master/snipshot/control-panel.PNG)
 
 ## How to install
