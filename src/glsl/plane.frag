@@ -11,7 +11,7 @@ float unpackDepth(vec4 textureColor) {
 }
 
 void main(void) {
-    vec3 shadowCoord = max(min((vPositionFromLight.xyz / vPositionFromLight.w) / 2.0 + 0.5, 1.0), 0.0);
+    vec3 shadowCoord = (vPositionFromLight.xyz / vPositionFromLight.w) / 2.0 + 0.5;
 
     float depth = unpackDepth(texture2D(uShadowMap, shadowCoord.xy));
 
